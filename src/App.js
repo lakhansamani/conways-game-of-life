@@ -8,12 +8,22 @@ const getNeighbours = (m, n) => {
   let neighbours = [];
   for (let i = m-1; i <= m+1; i++) {
     for (let j = n-1; j <= n+1; j++ ) {
-      if (i >  0 && j > 0) {
+      if (i >=  0 && j >= 0 && `${i}__${j}` !== `${m}__${n}`) {
         neighbours.push(`${i}__${j}`);
       }
     }
   }
   return neighbours;
+}
+
+const getLiveNeighbours = (neighbours, activeCells) => {
+  let liveNeighbours = [];
+  neighbours.forEach((n) => {
+    if (activeCells[n]) {
+      liveNeighbours.push(n);
+    }
+  });
+  return liveNeighbours;
 }
 
 class App extends Component {
@@ -53,7 +63,11 @@ class App extends Component {
   		if (activeState[`${i}__${j}`]) {
   			delete activeState[`${i}__${j}`];
   		} else {
-  			activeState[`${i}__${j}`] = getNeighbours(i, j);
+        const neighbours = getNeighbours(i, j);
+  			activeState[`${i}__${j}`] = {
+          neighbours,
+          liveNeighbours: getLiveNeighbours(neighbours, this.state.activeCell)
+        }
   		}
       console.log(activeState);
   		this.setState({
